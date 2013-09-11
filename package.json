@@ -1,0 +1,30 @@
+{
+  "name": "combine-stream",
+  "version": "0.0.0",
+  "description": "Combine multiple duplex streams into just one",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R tap"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/deoxxa/combine-stream.git"
+  },
+  "keywords": [
+    "stream",
+    "combine",
+    "aggregate"
+  ],
+  "author": "Conrad Pankoff <deoxxa@fknsrs.biz> (http://www.fknsrs.biz/)",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/deoxxa/combine-stream/issues"
+  },
+  "devDependencies": {
+    "chai": "~1.7.2",
+    "mocha": "~1.12.1"
+  },
+  "dependencies": {
+    "readable-stream": "git://github.com/deoxxa/readable-stream#fix-issue-66"
+  }
+}
