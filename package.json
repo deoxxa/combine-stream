@@ -1,6 +1,6 @@
 {
   "name": "combine-stream",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Combine multiple duplex streams into just one",
   "main": "index.js",
   "scripts": {
