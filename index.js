@@ -9,7 +9,7 @@ var CombineStream = module.exports = function CombineStream(options) {
 
   options.objectMode = true;
 
-  stream.Transform.call(this, options);
+  stream.Duplex.call(this, options);
 
   this._streams = [];
 
@@ -18,10 +18,32 @@ var CombineStream = module.exports = function CombineStream(options) {
       this.addStream(options.streams[i]);
     }
   }
-};
-CombineStream.prototype = Object.create(stream.Transform.prototype, {constructor: {value: CombineStream}});
 
-CombineStream.prototype._transform = function _transform(input, encoding, done) {
+  var self = this;
+
+  // propagate .end() action
+  this.on("finish", function() {
+    var waiting = self._streams.length;
+
+    var streams = self._streams.slice();
+
+    return streams.forEach(function(entry) {
+      entry.stream.removeListener("end", entry.onEnd);
+      entry.stream.removeListener("finish", entry.onFinish);
+
+      return entry.stream.end(function() {
+        waiting--;
+
+        if (waiting === 0) {
+          return self.push(null);
+        }
+      })
+    });
+  });
+};
+CombineStream.prototype = Object.create(stream.Duplex.prototype, {constructor: {value: CombineStream}});
+
+CombineStream.prototype._write = function _write(input, encoding, done) {
   var waiting = this._streams.length;
 
   if (waiting === 0) {
@@ -39,31 +61,10 @@ CombineStream.prototype._transform = function _transform(input, encoding, done) 
   }
 };
 
-CombineStream.prototype._flush = function _flush(done) {
-  var waiting = this._streams.length;
-
-  if (waiting === 0) {
-    return done();
+CombineStream.prototype._read = function _read(n) {
+  for (var i=0;i<this._streams.length;++i) {
+    this._streams[i].stream.resume();
   }
-
-  var self = this;
-
-  var streams = this._streams.slice();
-
-  return streams.forEach(function(entry) {
-    entry.stream.removeListener("end", entry.onEnd);
-    entry.stream.removeListener("finish", entry.onFinish);
-
-    return entry.stream.end(function() {
-      self.removeStream(entry.stream);
-
-      waiting--;
-
-      if (waiting === 0) {
-        return done();
-      }
-    })
-  });
 };
 
 CombineStream.prototype.addStream = function addStream(str) {
@@ -72,10 +73,6 @@ CombineStream.prototype.addStream = function addStream(str) {
   var onData = function onData(e) {
     if (!self.push(e)) {
       str.pause();
-
-      this.once("drain", function() {
-        str.resume();
-      });
     }
   };
 
