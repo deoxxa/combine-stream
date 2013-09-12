@@ -1,4 +1,4 @@
-combine-stream [![build status](https://travis-ci.org/deoxxa/combine-stream.png)](https://travis-ci.org/deoxxa/fork)
+combine-stream [![build status](https://travis-ci.org/deoxxa/combine-stream.png)](https://travis-ci.org/deoxxa/combine-stream)
 ===============
 
 Combine multiple duplex streams into just one.
@@ -22,17 +22,13 @@ Code:
 ```javascript
 var stream = require("stream");
 
-var CombineStream = require("./");
-
-var combine = new CombineStream();
+var CombineStream = require("combine-stream");
 
 var streamA = new stream.PassThrough({objectMode: true}),
     streamB = new stream.PassThrough({objectMode: true}),
     streamC = new stream.PassThrough({objectMode: true});
 
-combine.addStream(streamA);
-combine.addStream(streamB);
-combine.addStream(streamC);
+var combine = new CombineStream([streamA, streamB, streamC]);
 
 combine.on("data", console.log);
 
@@ -77,7 +73,7 @@ new CombineStream(options);
 ```
 
 ```javascript
-var fork = new CombineStream({
+var combine = new CombineStream({
   logSize: 100,
   recordDuplicates: true,
   comparator: functon compare(a, b) {
@@ -89,41 +85,14 @@ var fork = new CombineStream({
 Arguments
 
 * _options_ - an object containing, as well as the regular `TransformStream`
-  options, the following possible parameters:
+  options, the parameters described below. If this argument is an array, it will
+  be wrapped in `{streams: ...}`.
 
 _options_
 
 * _streams_ - an array of streams to add at instantiation time.
-
-**addStream**
-
-```javascript
-combine.addStream(stream);
-```
-
-```javascript
-combine.addStream(new stream.PassThrough({
-  objectMode: true,
-}));
-```
-
-Arguments
-
-* _stream_ - a stream to add to the combine-stream intance
-
-**removeStream**
-
-```javascript
-combine.removeStream(stream);
-```
-
-```javascript
-combine.removeStream(anExistingStream);
-```
-
-Arguments
-
-* _stream_ - a stream to remove from the combine-stream instance
+* _bubbleErrors_ - a boolean value specifying whether to bubble errors up from
+  the wrapped streams.
 
 Example
 -------
@@ -134,8 +103,6 @@ Also see [example.js](https://github.com/deoxxa/combine-stream/blob/master/examp
 var stream = require("stream");
 
 var CombineStream = require("combine-stream");
-
-var combine = new CombineStream();
 
 var delayed = function delayed(n) {
   var s = new stream.Transform({objectMode: true});
@@ -159,11 +126,12 @@ var delayed = function delayed(n) {
   return s;
 };
 
+var combine = new CombineStream();
+
 var streamA = delayed(100),
     streamB = delayed(500);
 
-combine.addStream(streamA);
-combine.addStream(streamB);
+var combine = new CombineStream([streamA, streamB]);
 
 combine.on("data", console.log);
 combine.on("error", console.log);

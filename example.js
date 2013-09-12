@@ -4,8 +4,6 @@ var stream = require("stream");
 
 var CombineStream = require("./");
 
-var combine = new CombineStream();
-
 var delayed = function delayed(n) {
   var s = new stream.Transform({objectMode: true});
 
@@ -31,8 +29,7 @@ var delayed = function delayed(n) {
 var streamA = delayed(100),
     streamB = delayed(500);
 
-combine.addStream(streamA);
-combine.addStream(streamB);
+var combine = new CombineStream([streamA, streamB]);
 
 combine.on("data", console.log);
 combine.on("error", console.log);
