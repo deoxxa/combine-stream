@@ -22,7 +22,8 @@
   },
   "devDependencies": {
     "chai": "~1.7.2",
-    "mocha": "~1.12.1"
+    "mocha": "~1.12.1",
+    "sinon": "~1.7.3"
   },
   "dependencies": {
     "readable-stream": "git://github.com/deoxxa/readable-stream#fix-issue-66"

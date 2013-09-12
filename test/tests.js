@@ -1,4 +1,5 @@
-var assert = require("chai").assert;
+var assert = require("chai").assert,
+    sinon = require("sinon");
 
 var stream = require("readable-stream");
 
@@ -42,5 +43,44 @@ describe("combine-stream", function() {
     combine.write("hello");
 
     combine.end();
+  });
+
+  it("should end combined streams when it is ended", function(done) {
+    var s1 = new stream.PassThrough(),
+        s2 = new stream.PassThrough();
+
+    var count = 0;
+    var onEnd = function onEnd() {
+      count++;
+
+      if (count === 2) {
+        return done();
+      }
+    };
+
+    s1.on("end", onEnd);
+    s2.on("end", onEnd);
+
+    var combine = new CombineStream([s1, s2]);
+
+    combine.end();
+  });
+
+  it("should pause combined streams when its write buffer fills up", function(done) {
+    var s = new stream.PassThrough({objectMode: true});
+
+    var spy = sinon.spy(s, "pause");
+
+    var combine = new CombineStream({streams: [s], highWaterMark: 5});
+
+    for (var i=0;i<25;++i) {
+      combine.write({o: i});
+    }
+
+    setTimeout(function() {
+      assert.isTrue(spy.called);
+
+      return done();
+    }, 10);
   });
 });
