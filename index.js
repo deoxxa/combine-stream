@@ -3,6 +3,10 @@ var stream = require("readable-stream");
 var CombineStream = module.exports = function CombineStream(options) {
   options = options || {};
 
+  if (Array.isArray(options)) {
+    options = {streams: options};
+  }
+
   options.objectMode = true;
 
   stream.Transform.call(this, options);
