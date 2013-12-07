@@ -26,6 +26,6 @@
     "sinon": "~1.7.3"
   },
   "dependencies": {
-    "readable-stream": "git://github.com/deoxxa/readable-stream#fix-issue-66"
+    "readable-stream": "~1.1.9"
   }
 }
