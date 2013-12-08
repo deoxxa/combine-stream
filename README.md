@@ -56,11 +56,6 @@ Or via git:
 
 > $ git clone git://github.com/deoxxa/combine-stream.git node_modules/combine-stream
 
-**NOTE:**
-
-Currently this is relying on [my fork of readable-stream](https://github.com/deoxxa/readable-stream/tree/fix-issue-66).
-Hopefully my patch gets merged and I can remove the hardcoded github dependency.
-
 API
 ---
 
