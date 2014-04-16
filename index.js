@@ -1,6 +1,9 @@
 var stream = require("readable-stream");
 
 var CombineStream = module.exports = function CombineStream(options) {
+  if (!(this instanceof CombineStream))
+    return new CombineStream(options);
+  
   options = options || {};
 
   if (Array.isArray(options)) {
